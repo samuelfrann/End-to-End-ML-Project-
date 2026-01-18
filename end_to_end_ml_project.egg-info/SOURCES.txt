@@ -1,0 +1,14 @@
+README.md
+setup.py
+end_to_end_ml_project.egg-info/PKG-INFO
+end_to_end_ml_project.egg-info/SOURCES.txt
+end_to_end_ml_project.egg-info/dependency_links.txt
+end_to_end_ml_project.egg-info/top_level.txt
+src/__init__.py
+src/exception.py
+src/logger.py
+src/utils.py
+src/components/__init__.py
+src/components/data_ingestion.py
+src/components/model_trainer.py
+src/components/model_transformation.py
