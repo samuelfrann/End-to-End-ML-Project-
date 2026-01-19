@@ -1,5 +1,6 @@
 import os
 import sys
+import numpy as np
 import pandas as pd
 import logging
 from pathlib import Path
@@ -26,6 +27,26 @@ class DataIngestion:
             # 1. Read the data
             df = pd.read_excel(r'C:\Users\pc\Documents\JUPYTER ML\End-to-End-ML-Project-\src\notebook\data\US Insurance Claims Data (1).xlsx')
             logging.info('Read the dataset as dataframe')
+
+            df.replace('?', np.nan, inplace=True)
+
+            df_missing_target = df[df['fraud_reported'].isna()]
+
+            df = df.dropna(subset=['fraud_reported'])
+
+            df['policy_bind_date'] = pd.to_datetime(df['policy_bind_date'])
+            df['bind_year'] = df['policy_bind_date'].dt.year
+            df['bind_month'] = df['policy_bind_date'].dt.month
+            #df['bind_month_name'] = df['policy_bind_date'].dt.month_name()
+            df['bind_dayofweek'] = df['policy_bind_date'].dt.dayofweek
+            #df['bind_day_name'] = df['policy_bind_date'].dt.day_name()
+            df['bind_day'] = df['policy_bind_date'].dt.day
+            df['bind_hour'] = df['policy_bind_date'].dt.hour
+
+            df.drop(['policy_bind_date', 'incident_date'], axis=1, inplace=True)
+
+            df['make_model'] = df['auto_make'].astype(str) + '_' + df['auto_model'].astype(str)
+            df.drop(['auto_make', 'auto_model'], axis=1, inplace=True)
 
             # 2. CREATE THE DIRECTORY FIRST
             # This extracts 'artifacts' from the path and creates the folder
