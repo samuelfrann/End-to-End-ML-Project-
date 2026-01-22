@@ -1,0 +1,201 @@
+<html>
+    <body>
+        <div class = 'login'></div>
+            <h1>Welcome to the Insurace Auto Claim Fraud Detection System</h1>
+
+            <form action = "{{ url_for('predict_datapoint') }}" method="POST">
+            <h1>
+                <legend>Fraud Detection System</legend>
+            </h1>
+
+            <div class="form-group">
+            <label for="policy_number"> Policy Number</label>
+            <input type="type" name="policy_number" id="policy_number" required> 
+            </div>
+
+            <div class="form-group">
+            <label for="age"> Policy Holder Age</label>
+            <input type="number" name="age" id="age" required> 
+            </div>
+
+            <div class="form-group">
+            <label for="umbrella_limit"> Umbrella Limit</label>
+            <input type="number" name="umbrella_limit" id="umbrella_limit" required> 
+            </div>
+
+            <div class="form-group">
+            <label for="claim_amount"> Amount Rquested for Claim</label>
+            <input type="number" name="claim_amount" id="claim_amount" required> 
+            </div>
+
+            <div class="form-group">
+            <label for="policy_annual_premium"> Policy Annual Premium</label>
+            <input type="number" name="policy_annual_premium" id="policy_annual_premium" required> 
+            </div>
+
+            <div class="form-group">
+            <label for="number_of_vehicles_involved"> Number of Vehicles Involved</label>
+            <input type="number" name="number_of_vehicles_involved" id="number_of_vehicles_involved" required> 
+            </div>
+
+            <div class="form-group">
+            <label for="incident_hour_of_the_day"> Incident Hour of the Day</label>
+            <input type="number" name="incident_hour_of_the_day" id="incident_hour_of_the_day" min="0" max="23"required> 
+            </div>
+
+            <div class="form-group">
+            <label for="bodily_injuries"> Bodily Injuries</label>
+            <input type="number" name="bodily_injuries" id="bodily_injuries" required> 
+            </div>
+
+            <div class="form-group">
+            <label for="witnesses"> Number of Witnesses</label>
+            <input type="number" name="witnesses" id="witnesses" required> 
+            </div>
+
+            <div class="form-group">
+            <label for="auto_year"> Auto Year</label>
+            <input type="number" name="auto_year" id="auto_year" required> 
+            </div>
+
+            <div class="form-group">
+            <label for="policy_deductable"> Policy Deductable</label>
+            <input type="number" name="policy_deductable" id="policy_deductable"  required> 
+            </div>
+
+            <div class="form-group">
+            <label for="insured_sex">Insured Sex</label>
+            <select name="insured_sex" id="insured_sex">
+                <option value="Select"> Select</option>
+                <option value="Male"> Male</option>
+                <option value="Female"> Female</option>
+            </select>
+            </div>
+
+            <div class="form-group">
+            <label for="insured_education_level">Insured Education Level</label>
+            <select name="insured_education_level" id="insured_education_level">
+                <option value="Select"> Select</option>
+                <option value="JD"> JD</option>
+                <option value="High School"> High School</option>
+                <option value="Associate"> Associate</option>
+                <option value="MD"> MD</option>
+                <option value="Masters"> Masters</option>
+                <option value="PhD"> PhD</option>
+                <option value="College"> College</option>
+            </select>
+            </div>
+
+            <div class="form-group">
+            <label for="collision_type">Collision Type</label>
+            <select name="collision_type" id="collision_type">
+                <option value="Select"> Select</option>
+                <option value="Rear Collision"> Rear Collision</option>
+                <option value="Side Collision"> Side Collision</option>
+                <option value="Front  Collision"> Front  Collision</option>
+                <option value="Other"> Other</option>
+            </select>
+            </div>
+
+            <div class="form-group">
+            <label for="police_report_available">Police Report Available </label>
+            <select name="police_report_available" id="police_report_available">
+                <option value="Select"> Select</option>
+                <option value="No"> No</option>
+                <option value="Yes"> Yes</option>
+            </select>
+            </div>
+
+            <div class="form-group">
+            <label for="policy_state">Policy State </label>
+            <select name="policy_state" id="policy_state">
+                <option value="Select"> Select</option>
+                <option value="OH"> Ohio</option>
+                <option value="IL"> Illinois</option>
+                <option value="IN"> Indiana</option>
+            </select>
+            </div>
+
+            <div class="form-group">
+            <label for="policy_csl">Policy Csl </label>
+            <select name="policy_csl" id="policy_csl">
+                <option value="Select"> Select</option>
+                <option value="100/300"> 100/300</option>
+                <option value="250/500"> 250/500</option>
+                <option value="500/1000"> 500/1000</option>
+            </select>
+            </div>
+
+            <div class="form-group">
+            <label for="insured_occupation">Insured Occupation</label>
+            <select name="insured_occupation" id="insured_occupation">
+                <option value="Select"> Select</option>
+                <option value="machine-op-inspct"> machine Op Inspct</option>
+                <option value="prof-specialty"> Prof Specialty</option>
+                <option value="tech-support"> Tech Support</option>
+                <option value="exec-managerial"> Exec Managerial</option>
+                <option value="sales"> Sales</option>
+                <option value="craft-repair"> Craft-Repair</option>
+                <option value="transport-moving"> Transport Moving</option>
+                <option value="tech-support"> Tech Support</option>
+                <option value="priv-house-serv"> Private House Service</option>
+                <option value="other-service"> Other Services</option>
+                <option value="armed-forces"> Armed Forces</option>
+                <option value="adm-clerical"> Admin clerical</option>
+                <option value="protective-serv"> Protective Services</option>
+                <option value="handlers-cleaners"> Handlers Cleaners</option>
+                <option value="farming-fishing"> Fish Farming</option>
+            </select>
+            </div>
+
+            <div class="form-group">
+            <label for="incident_type">Incident Type </label>
+            <select name="incident_type" id="incident_type">
+                <option value="Select"> Select</option>
+                <option value="Multi-vehicle Collision"> Multi Vehicle Collision</option>
+                <option value="Single Vehicle Collision"> Single Vehicle Collision</option>
+                <option value="Vehicle Theft"> Vehicle Theft</option>
+                <option value="Parked Car"> Parked Car</option>
+            </select>
+            </div>
+
+            <div class="form-group">
+            <label for="incident_severity">Incident Severity </label>
+            <select name="incident_severity" id="incident_severity">
+                <option value="Select"> Select</option>
+                <option value="Minor Damage"> Minor Damage</option>
+                <option value="Total Loss"> Total Loss</option>
+                <option value="Major Damaget"> Major Damage</option>
+                <option value="Trivial Damage"> Trivial Damage</option>
+            </select>
+            </div>
+
+            <div class="form-group">
+            <label for="authorities_contacted">Authorities Contacted </label>
+            <select name="authorities_contacted" id="authorities_contacted">
+                <option value="Select"> Select</option>
+                <option value="Police"> Police</option>
+                <option value="Fire"> Fire</option>
+                <option value="Ambulance"> Ambulance</option>
+                <option value="Other"> Other</option>
+            </select>
+            </div>
+
+            <div class="form-group">
+            <label for="property_damage">Property Damage </label>
+            <select name="property_damage" id="property_damage">
+                <option value="Select"> Select</option>
+                <option value="No"> No</option>
+                <option value="Yes"> Yes</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Predict Fraud</button>
+        </div>
+
+    </form> </div> <h2 style="color: blue; margin-top: 20px;">
+        The prediction is: {{results}}
+</h2>
+</body>
+</html>
