@@ -19,7 +19,7 @@ def home():
     return render_template('home.html')
 
 
-@app.route('/predictdata', methods=['GET', 'POST'])
+@app.route('/predict', methods=['GET', 'POST'])
 def predict_datapoint():
     if request.method == 'GET':
         return render_template('home.html')
@@ -49,13 +49,20 @@ def predict_datapoint():
             property_damage = request.form.get('property_damage')
         )
 
-        pred_df = data.get_data_data_as_data_frame()
+        pred_df = data.get_data_as_data_frame()
+        print("--- Input Dataframe ---")
         print(pred_df)
 
         predict_pipeline = PredictPipeline()
         results = predict_pipeline.predict(pred_df)
-        return render_template('home.html', results=results[0])
-
+        
+        # Convert numerical prediction (0 or 1) to a String
+        # This ensures {% if results %} in HTML is always TRUE
+        prediction_label = "Fraud Detected" if results[0] == 1 else "No Fraud Detected"
+        
+        print(f"--- Prediction Result: {prediction_label} ---")
+        
+        return render_template('home.html', results=prediction_label)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)

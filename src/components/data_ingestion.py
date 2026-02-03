@@ -33,7 +33,6 @@ class DataIngestion:
             logging.info('Read the dataset as dataframe')
 
             df.replace('?', np.nan, inplace=True)
-
             df_missing_target = df[df['fraud_reported'].isna()]
 
             df = df.dropna(subset=['fraud_reported'])

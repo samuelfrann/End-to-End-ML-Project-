@@ -1,3 +1,4 @@
+import os
 import sys
 import pandas as pd
 from src.exception import CustomException
@@ -6,20 +7,28 @@ from src.utils import load_object
 class PredictPipeline:
     def __init__(self):
         pass
-    
+
     def predict(self, features):
         try:
-            model_path = r'C:\Users\pc\Documents\JUPYTER ML\End-to-End-ML-Project-\artifacts\model.pkl'
-            preprocessor_path = r'C:\Users\pc\Documents\JUPYTER ML\End-to-End-ML-Project-\artifacts\preprocessor.pkl'
+            # Use relative paths so it works on any machine
+            model_path = os.path.join("artifacts", "model.pkl")
+            preprocessor_path = os.path.join("artifacts", "preprocessor.pkl")
+
+            print("Loading artifacts...")
             model = load_object(file_path=model_path)
             preprocessor = load_object(file_path=preprocessor_path)
+
+            print("Preprocessing features...")
+            # This ensures the data is scaled exactly like the training data
             data_scaled = preprocessor.transform(features)
-            preds=model.predict(data_scaled)
+            
+            print("Making prediction...")
+            preds = model.predict(data_scaled)
             return preds
-        
+
         except Exception as e:
-            raise CustomException(e,sys)
-        
+            raise CustomException(e, sys)
+
 class CustomData:
     def __init__(self,
         policy_number: str,
@@ -68,51 +77,52 @@ class CustomData:
         self.authorities_contacted = authorities_contacted
         self.property_damage = property_damage
 
-    def get_data_data_as_data_frame(self):
+    def get_data_as_data_frame(self):
         try:
             custom_data_input_dict = {
-                'policy_number': [self.policy_number],
-                'age': [self.age],
-                'umbrella_limit': [self.umbrella_limit],
-                'claim_amount': [self.claim_amount],
-                'policy_annual_premium': [self.policy_annual_premium],
-                'number_of_vehicles_involved': [self.number_of_vehicles_involved],
-                'incident_hour_of_the_day': [self.incident_hour_of_the_day],
-                'bodily_injuries': [self.bodily_injuries],
-                'witnesses': [self.witnesses],
-                'auto_year': [self.auto_year],
-                'policy_deductable': [self.policy_deductable],
-                'insured_sex': [self.insured_sex],
-                'insured_education_level': [self.insured_education_level],
-                'collision_type': [self.collision_type],
-                'police_report_available': [self.police_report_available],
-                'policy_state': [self.policy_state],
-                'policy_csl': [self.policy_csl],
-                'insured_occupation': [self.insured_occupation],
-                'incident_type': [self.incident_type],
-                'incident_severity': [self.incident_severity],
-                'authorities_contacted': [self.authorities_contacted],
-                'property_damage': [self.property_damage],
+                "policy_number": [self.policy_number],
+                "age": [self.age],
+                "umbrella_limit": [self.umbrella_limit],
+                "total_claim_amount": [self.claim_amount], # Ensure this matches training name
+                "policy_annual_premium": [self.policy_annual_premium],
+                "number_of_vehicles_involved": [self.number_of_vehicles_involved],
+                "incident_hour_of_the_day": [self.incident_hour_of_the_day],
+                "bodily_injuries": [self.bodily_injuries],
+                "witnesses": [self.witnesses],
+                "auto_year": [self.auto_year],
+                "policy_deductable": [self.policy_deductable],
+                "insured_sex": [self.insured_sex],
+                "insured_education_level": [self.insured_education_level],
+                "collision_type": [self.collision_type],
+                "police_report_available": [self.police_report_available],
+                "policy_state": [self.policy_state],
+                "policy_csl": [self.policy_csl],
+                "insured_occupation": [self.insured_occupation],
+                "incident_type": [self.incident_type],
+                "incident_severity": [self.incident_severity],
+                "authorities_contacted": [self.authorities_contacted],
+                "property_damage": [self.property_damage],
+                
+                # --- ADD THESE MISSING COLUMNS HERE ---
+                "vehicle_claim": [self.claim_amount], # Standard practice: use total as proxy or 0
+                "property_claim": [0],
+                "injury_claim": [0],
+                
+                # Other placeholders your model expects
+                "months_as_customer": [0],
+                "capital-gains": [0],
+                "capital-loss": [0],
+                "insured_zip": [0],
+                "incident_location": ["Unknown"],
+                "incident_city": ["Unknown"],
+                "incident_state": [self.policy_state],
+                "insured_relationship": ["Unknown"],
+                "insured_hobbies": ["Unknown"],
+                "make_model": ["Unknown"]
+            }
 
-                'total_claim_amount': [self.claim_amount], 
-                'months_as_customer': [0],
-                'capital-gains': [0],
-                'capital-loss': [0],
-                'insured_zip': [0],
-                'injury_claim': [0],
-                'property_claim': [0],
-                'vehicle_claim': [0],
-                'incident_location': ["Unknown"],
-                'incident_city': ["Unknown"],
-                'incident_state': [self.policy_state], # Reusing state from form
-                'insured_relationship': ["Unknown"],
-                'insured_hobbies': ["Unknown"],
-                'make_model': ["Unknown"]
-                }
-
-            return pd.DataFrame(custom_data_input_dict)
-        
+            df = pd.DataFrame(custom_data_input_dict)
+            return df
 
         except Exception as e:
-            raise CustomException(e,sys)
-        
+            raise CustomException(e, sys)
