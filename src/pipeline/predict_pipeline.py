@@ -1,5 +1,3 @@
-features = features.drop(columns=["policy_number"], errors="ignore")
-            data_scaled = preprocessor.transform(features)
 import os
 import sys
 import pandas as pd
@@ -12,51 +10,26 @@ class PredictPipeline:
 
     def predict(self, features):
         try:
-            # Use relative paths so it works on any machine
             model_path = os.path.join("artifacts", "model.pkl")
             preprocessor_path = os.path.join("artifacts", "preprocessor.pkl")
-
-            print("Loading artifacts...")
+            
             model = load_object(file_path=model_path)
             preprocessor = load_object(file_path=preprocessor_path)
-
-            print("Preprocessing features...")
-            # This ensures the data is scaled exactly like the training data
-            features = features.drop(columns=["policy_number"], errors="ignore")
-            data_scaled = preprocessor.transform(features)
             
-            print("Making prediction...")
+            data_scaled = preprocessor.transform(features)
             preds = model.predict(data_scaled)
             return preds
-
+            
         except Exception as e:
             raise CustomException(e, sys)
 
 class CustomData:
-    def __init__(self,
-        policy_number: str,
-        age: int,
-        umbrella_limit: int,
-        claim_amount: float,
-        policy_annual_premium: float,
-        number_of_vehicles_involved: int,
-        incident_hour_of_the_day: int,
-        bodily_injuries: int,
-        witnesses: int,
-        auto_year: int,
-        policy_deductable: int,
-        insured_sex: str,
-        insured_education_level: str,
-        collision_type: str,
-        police_report_available: str,
-        policy_state: str,
-        policy_csl: str,
-        insured_occupation: str,
-        incident_type: str,
-        incident_severity: str,
-        authorities_contacted: str,
-        property_damage: str):
-
+    def __init__(self, policy_number, age, umbrella_limit, claim_amount,
+        policy_annual_premium, number_of_vehicles_involved, incident_hour_of_the_day,
+        bodily_injuries, witnesses, auto_year, policy_deductable, insured_sex,
+        insured_education_level, collision_type, police_report_available,
+        policy_state, policy_csl, insured_occupation, incident_type,
+        incident_severity, authorities_contacted, property_damage):
         self.policy_number = policy_number
         self.age = age
         self.umbrella_limit = umbrella_limit
@@ -82,11 +55,11 @@ class CustomData:
 
     def get_data_as_data_frame(self):
         try:
-            custom_data_input_dict = {
+            d = {
                 "policy_number": [self.policy_number],
                 "age": [self.age],
                 "umbrella_limit": [self.umbrella_limit],
-                "total_claim_amount": [self.claim_amount], # Ensure this matches training name
+                "total_claim_amount": [self.claim_amount],
                 "policy_annual_premium": [self.policy_annual_premium],
                 "number_of_vehicles_involved": [self.number_of_vehicles_involved],
                 "incident_hour_of_the_day": [self.incident_hour_of_the_day],
@@ -105,13 +78,9 @@ class CustomData:
                 "incident_severity": [self.incident_severity],
                 "authorities_contacted": [self.authorities_contacted],
                 "property_damage": [self.property_damage],
-                
-                # --- ADD THESE MISSING COLUMNS HERE ---
-                "vehicle_claim": [self.claim_amount], # Standard practice: use total as proxy or 0
+                "vehicle_claim": [self.claim_amount],
                 "property_claim": [0],
                 "injury_claim": [0],
-                
-                # Other placeholders your model expects
                 "months_as_customer": [0],
                 "capital-gains": [0],
                 "capital-loss": [0],
@@ -123,9 +92,6 @@ class CustomData:
                 "insured_hobbies": ["Unknown"],
                 "make_model": ["Unknown"]
             }
-
-            df = pd.DataFrame(custom_data_input_dict)
-            return df
-
+            return pd.DataFrame(d)
         except Exception as e:
             raise CustomException(e, sys)
