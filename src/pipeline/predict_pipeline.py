@@ -1,3 +1,5 @@
+features = features.drop(columns=["policy_number"], errors="ignore")
+            data_scaled = preprocessor.transform(features)
 import os
 import sys
 import pandas as pd
@@ -20,6 +22,7 @@ class PredictPipeline:
 
             print("Preprocessing features...")
             # This ensures the data is scaled exactly like the training data
+            features = features.drop(columns=["policy_number"], errors="ignore")
             data_scaled = preprocessor.transform(features)
             
             print("Making prediction...")
