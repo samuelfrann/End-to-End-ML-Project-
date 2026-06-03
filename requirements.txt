@@ -10,4 +10,5 @@ flask
 ipykernel 
 setuptools
 dill
-xgboostflask-cors
+xgboost
+flask-cors
