@@ -16,14 +16,15 @@
 
     <div class="max-w-4xl mx-auto my-10 px-4">
         <div class="text-center mb-10">
-            <h1 class="text-3xl font-bold text-blue-900">Insurance Auto Claim Fraud Detection</h1>
+            <a href="index.html" class="text-blue-500 text-sm hover:underline">&larr; Back to Home</a>
+            <h1 class="text-3xl font-bold text-blue-900 mt-2">Insurance Auto Claim Fraud Detection</h1>
             <p class="text-slate-500 mt-2">Professional Grade ML Analysis for Claim Integrity</p>
         </div>
 
         <div class="bg-white shadow-xl rounded-2xl p-8 border border-slate-100">
             <form id="fraudForm">
                 <h2 class="text-xl font-semibold mb-6 text-slate-700 border-b pb-2">Policy & Incident Details</h2>
-                
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="flex flex-col">
                         <label class="text-sm font-medium mb-1">Policy Number</label>
@@ -78,15 +79,7 @@
                 </div>
             </form>
 
-            <div id="resultContainer" class="mt-8">
-                {% if results %}
-                <div class="p-6 rounded-xl {% if 'Fraud' in results and 'No' not in results %}bg-red-50 border border-red-200{% else %}bg-green-50 border border-green-200{% endif %} text-center">
-                    <h3 class="text-lg font-semibold {% if 'Fraud' in results and 'No' not in results %}text-red-700{% else %}text-green-700{% endif %}">
-                        Prediction Result: {{ results }}
-                    </h3>
-                </div>
-                {% endif %}
-            </div>
+            <div id="resultContainer" class="mt-8"></div>
         </div>
 
         <footer class="mt-10 text-center text-slate-400 text-sm">
@@ -95,44 +88,60 @@
     </div>
 
     <script>
-        document.getElementById('submitBtn').addEventListener('click', function() {
+        // ✅ Replace this with your actual Render backend URL
+        const RENDER_URL = "https://YOUR-APP-NAME.onrender.com";
+
+        document.getElementById('submitBtn').addEventListener('click', function () {
             const form = document.getElementById('fraudForm');
             const resultContainer = document.getElementById('resultContainer');
             const submitBtn = this;
 
-            // Simple validation check
-            if(!form.checkValidity()) {
+            if (!form.checkValidity()) {
                 form.reportValidity();
                 return;
             }
 
-            // Show loading state
+            // Show loading
             submitBtn.innerText = "Analyzing Claim...";
             submitBtn.disabled = true;
-            resultContainer.innerHTML = '<div class="flex justify-center"><div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12"></div></div>';
+            resultContainer.innerHTML = `
+                <div class="flex justify-center">
+                    <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12"></div>
+                </div>`;
 
+            // ✅ Collect form as plain object and send as JSON (not FormData)
             const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
 
-            fetch("{{ url_for('predict_datapoint') }}", {
+            fetch(`${RENDER_URL}/predict`, {
                 method: "POST",
-                body: formData
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
             })
-            .then(response => response.text())
-            .then(html => {
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
-                const newResult = doc.getElementById('resultContainer').innerHTML;
-                
-                // Update just the result section
-                resultContainer.innerHTML = newResult;
-                
-                // Reset button
+            .then(response => response.json())
+            .then(json => {
+                const result = json.result || json.error || "Unexpected response";
+                const isFraud = result.includes('Fraud') && !result.includes('No');
+
+                resultContainer.innerHTML = `
+                    <div class="p-6 rounded-xl ${isFraud
+                        ? 'bg-red-50 border border-red-200'
+                        : 'bg-green-50 border border-green-200'} text-center">
+                        <h3 class="text-lg font-semibold ${isFraud ? 'text-red-700' : 'text-green-700'}">
+                            Prediction Result: ${result}
+                        </h3>
+                    </div>`;
+
                 submitBtn.innerText = "Run Fraud Analysis";
                 submitBtn.disabled = false;
             })
             .catch(error => {
                 console.error('Error:', error);
-                resultContainer.innerHTML = '<p class="text-red-500 text-center">An error occurred. Please check the terminal.</p>';
+                resultContainer.innerHTML = `
+                    <p class="text-red-500 text-center">
+                        Could not reach the server. Make sure the Render backend is live.
+                    </p>`;
+                submitBtn.innerText = "Run Fraud Analysis";
                 submitBtn.disabled = false;
             });
         });
