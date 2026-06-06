@@ -7,12 +7,10 @@ application = Flask(__name__)
 app = application
 CORS(app)
 
-# ✅ Serve landing page
 @app.route('/')
 def index():
     return render_template('index.html')
 
-# ✅ Serve the prediction form (GET) + run prediction (POST)
 @app.route('/predict', methods=['GET', 'POST'])
 def predict_datapoint():
     if request.method == 'GET':
@@ -20,6 +18,13 @@ def predict_datapoint():
 
     try:
         data = request.get_json()
+
+        # ✅ FIX 1: Convert policy_number to float so numeric imputer doesn't choke
+        try:
+            data['policy_number'] = float(data.get('policy_number', 0))
+        except (ValueError, TypeError):
+            data['policy_number'] = 0.0
+
         custom_data = CustomData(
             policy_number=data.get('policy_number'),
             age=data.get('age'),
@@ -46,8 +51,7 @@ def predict_datapoint():
         )
         pred_df = custom_data.get_data_as_data_frame()
 
-        if 'policy_number' in pred_df.columns:
-            pred_df = pred_df.drop(columns=['policy_number'])
+        # ✅ FIX 2: Removed the policy_number drop — preprocessor needs it
 
         predict_pipeline = PredictPipeline()
         results = predict_pipeline.predict(pred_df)
