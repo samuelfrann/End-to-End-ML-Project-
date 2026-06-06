@@ -19,7 +19,7 @@ def predict_datapoint():
     try:
         data = request.get_json()
 
-        # ✅ FIX 1: Convert policy_number to float so numeric imputer doesn't choke
+        # Convert policy_number to float so numeric imputer doesn't choke
         try:
             data['policy_number'] = float(data.get('policy_number', 0))
         except (ValueError, TypeError):
@@ -50,8 +50,6 @@ def predict_datapoint():
             property_damage=data.get('property_damage')
         )
         pred_df = custom_data.get_data_as_data_frame()
-
-        # ✅ FIX 2: Removed the policy_number drop — preprocessor needs it
 
         predict_pipeline = PredictPipeline()
         results = predict_pipeline.predict(pred_df)
