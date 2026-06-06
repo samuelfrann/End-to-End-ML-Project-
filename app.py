@@ -1,19 +1,23 @@
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 from src.pipeline.predict_pipeline import CustomData, PredictPipeline
 
 application = Flask(__name__)
 app = application
-# Enable CORS so Vercel can talk to Render
 CORS(app)
 
+# ✅ Serve landing page
 @app.route('/')
 def index():
-    return jsonify({"status": "FraudGuard API is live. Ready for Vercel."})
+    return render_template('index.html')
 
-@app.route('/predict', methods=['POST'])
+# ✅ Serve the prediction form (GET) + run prediction (POST)
+@app.route('/predict', methods=['GET', 'POST'])
 def predict_datapoint():
+    if request.method == 'GET':
+        return render_template('home.html')
+
     try:
         data = request.get_json()
         custom_data = CustomData(
@@ -41,17 +45,16 @@ def predict_datapoint():
             property_damage=data.get('property_damage')
         )
         pred_df = custom_data.get_data_as_data_frame()
-        
-        # Safely drop the string column before prediction to prevent ValueError
+
         if 'policy_number' in pred_df.columns:
             pred_df = pred_df.drop(columns=['policy_number'])
-            
+
         predict_pipeline = PredictPipeline()
         results = predict_pipeline.predict(pred_df)
-        
+
         prediction_label = "Fraud Detected" if results[0] == 1 else "No Fraud Detected"
         return jsonify({"result": prediction_label})
-        
+
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 

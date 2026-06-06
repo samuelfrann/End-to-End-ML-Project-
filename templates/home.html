@@ -16,7 +16,7 @@
 
     <div class="max-w-4xl mx-auto my-10 px-4">
         <div class="text-center mb-10">
-            <a href="index.html" class="text-blue-500 text-sm hover:underline">&larr; Back to Home</a>
+            <a href="/" class="text-blue-500 text-sm hover:underline">&larr; Back to Home</a>
             <h1 class="text-3xl font-bold text-blue-900 mt-2">Insurance Auto Claim Fraud Detection</h1>
             <p class="text-slate-500 mt-2">Professional Grade ML Analysis for Claim Integrity</p>
         </div>
@@ -30,22 +30,18 @@
                         <label class="text-sm font-medium mb-1">Policy Number</label>
                         <input type="text" name="policy_number" required class="border rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 outline-none transition">
                     </div>
-
                     <div class="flex flex-col">
                         <label class="text-sm font-medium mb-1">Policy Holder Age</label>
                         <input type="number" name="age" required class="border rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 outline-none transition">
                     </div>
-
                     <div class="flex flex-col">
                         <label class="text-sm font-medium mb-1">Claim Amount Requested</label>
                         <input type="number" name="claim_amount" required class="border rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 outline-none transition">
                     </div>
-
                     <div class="flex flex-col">
                         <label class="text-sm font-medium mb-1">Annual Premium</label>
                         <input type="number" name="policy_annual_premium" required class="border rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 outline-none transition">
                     </div>
-
                     <div class="flex flex-col">
                         <label class="text-sm font-medium mb-1">Education Level</label>
                         <select name="insured_education_level" class="border rounded-lg p-2.5 bg-white focus:ring-2 focus:ring-blue-500 outline-none transition">
@@ -59,7 +55,6 @@
                             <option value="High School">High School</option>
                         </select>
                     </div>
-
                     <div class="flex flex-col">
                         <label class="text-sm font-medium mb-1">Incident Severity</label>
                         <select name="incident_severity" class="border rounded-lg p-2.5 bg-white focus:ring-2 focus:ring-blue-500 outline-none transition">
@@ -88,9 +83,6 @@
     </div>
 
     <script>
-        // ✅ Replace this with your actual Render backend URL
-        const RENDER_URL = "https://YOUR-APP-NAME.onrender.com";
-
         document.getElementById('submitBtn').addEventListener('click', function () {
             const form = document.getElementById('fraudForm');
             const resultContainer = document.getElementById('resultContainer');
@@ -101,7 +93,6 @@
                 return;
             }
 
-            // Show loading
             submitBtn.innerText = "Analyzing Claim...";
             submitBtn.disabled = true;
             resultContainer.innerHTML = `
@@ -109,18 +100,18 @@
                     <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12"></div>
                 </div>`;
 
-            // ✅ Collect form as plain object and send as JSON (not FormData)
+            // ✅ Send as JSON — matches Flask's request.get_json()
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
 
-            fetch(`${RENDER_URL}/predict`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
+            fetch('/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             })
             .then(response => response.json())
             .then(json => {
-                const result = json.result || json.error || "Unexpected response";
+                const result = json.result || json.error || 'Unexpected response';
                 const isFraud = result.includes('Fraud') && !result.includes('No');
 
                 resultContainer.innerHTML = `
@@ -132,16 +123,14 @@
                         </h3>
                     </div>`;
 
-                submitBtn.innerText = "Run Fraud Analysis";
+                submitBtn.innerText = 'Run Fraud Analysis';
                 submitBtn.disabled = false;
             })
             .catch(error => {
                 console.error('Error:', error);
                 resultContainer.innerHTML = `
-                    <p class="text-red-500 text-center">
-                        Could not reach the server. Make sure the Render backend is live.
-                    </p>`;
-                submitBtn.innerText = "Run Fraud Analysis";
+                    <p class="text-red-500 text-center">An error occurred. Please try again.</p>`;
+                submitBtn.innerText = 'Run Fraud Analysis';
                 submitBtn.disabled = false;
             });
         });
